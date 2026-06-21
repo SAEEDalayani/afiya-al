@@ -1,3 +1,13 @@
+import os
+import subprocess
+import sys
+
+# أمر سحري لتثبيت المكتبات تلقائياً داخل السيرفر العالمي
+try:
+    import g4f
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "g4f", "curl_cffi"])
+
 import streamlit as st
 from g4f.client import Client
 
@@ -26,9 +36,7 @@ if st.button("🚀 حلل حالتي وجهز التقرير"):
     else:
         with st.spinner("جاري تحليل حالتك عبر المحرك المجاني..."):
             try:
-                # استخدام عميل مجاني لا يحتاج لمفتاح سري
                 client = Client()
-                
                 prompt = f"""
                 أنت مساعد طبي ذكي محترف. تم تزويدك بحالة مريض يتحدث بالعامية.
                 التاريخ الطبي للمريض: {medical_history if medical_history else 'لا يوجد'}
@@ -38,17 +46,13 @@ if st.button("🚀 حلل حالتي وجهز التقرير"):
                 1) نصائح وتوجيهات أولية ومباشرة للمريض لتخفيف ألمه وطمأنته.
                 2) تقرير طبي مختصر ومجهز ومصاغ بأسلوب احترافي لتقديمه للطبيب عند زيارته (Medical Report).
                 """
-                
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}]
                 )
-                
                 result_text = response.choices[0].message.content
-                
                 st.success("✨ تم التحليل بنجاح!")
                 st.markdown("### 💡 التوجيهات المباشرة والتقرير المجهز:")
                 st.info(result_text)
-                
             except Exception as e:
                 st.error("عذراً، واجه المحرك المجاني ضغطاً مؤقتاً. يرجى المحاولة مرة أخرى بعد ثوانٍ.")
