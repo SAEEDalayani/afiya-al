@@ -1,13 +1,3 @@
-import os
-import subprocess
-import sys
-
-# أمر سحري لتثبيت المكتبات تلقائياً داخل السيرفر العالمي
-try:
-    import g4f
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "g4f", "curl_cffi"])
-
 import streamlit as st
 from g4f.client import Client
 
@@ -34,7 +24,7 @@ if st.button("🚀 حلل حالتي وجهز التقرير"):
     if not patient_complaint:
         st.warning("الرجاء كتابة ما تشعر به أولاً.")
     else:
-        with st.spinner("جاري تحليل حالتك عبر المحرك المجاني..."):
+        with st.spinner("جاري تحليل حالتك..."):
             try:
                 client = Client()
                 prompt = f"""
@@ -44,15 +34,16 @@ if st.button("🚀 حلل حالتي وجهز التقرير"):
                 
                 بناءً على ذلك، قم بتقديم رد باللغة العربية الفصحى يحتوي على قسمين واضحة:
                 1) نصائح وتوجيهات أولية ومباشرة للمريض لتخفيف ألمه وطمأنته.
-                2) تقرير طبي مختصر ومجهز ومصاغ بأسلوب احترافي لتقديمه للطبيب عند زيارته (Medical Report).
+                2) تقرير طبي مختصر ومجهز ومصاغ بأسلوب احترافي لتقديمه للطبيب عند زيارته.
                 """
+                
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": prompt}]
                 )
+                
                 result_text = response.choices[0].message.content
                 st.success("✨ تم التحليل بنجاح!")
-                st.markdown("### 💡 التوجيهات المباشرة والتقرير المجهز:")
                 st.info(result_text)
             except Exception as e:
-                st.error("عذراً، واجه المحرك المجاني ضغطاً مؤقتاً. يرجى المحاولة مرة أخرى بعد ثوانٍ.")
+                st.error("عذراً، يرجى المحاولة مرة أخرى.")
